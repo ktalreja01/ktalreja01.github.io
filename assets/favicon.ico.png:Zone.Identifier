@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://cloudconvert.com/
+HostUrl=https://eu-central.storage.cloudconvert.com/tasks/058e721f-0105-4886-bab8-c8961ce15f16/goldmushroom.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20231227%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20231227T062158Z&X-Amz-Expires=86400&X-Amz-Signature=fbc3989255589f9a55d344dfd2e6514cd463156363d9ce18049d33253ecbb3d5&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22goldmushroom.png%22&response-content-type=image%2Fpng&x-id=GetObject
