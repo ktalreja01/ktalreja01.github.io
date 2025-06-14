@@ -1,0 +1,91 @@
+/* Base & Typography */
+:root {
+    --bg: #f7f5f2;
+    --text: #333;
+    --accent: #5a4f7c;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Lora', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 700px;
+    margin: auto;
+  }
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  h1, h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 0.5em;
+    color: var(--accent);
+  }
+  header, footer {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  nav a {
+    margin: 0 1rem;
+  }
+  
+  /* Sections */
+  section {
+    margin-bottom: 3rem;
+  }
+  
+  /* Footer */
+  footer {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  /* Profile picture via CSS */
+  header::before {
+    content: "";
+    display: block;
+    width: 250px;                
+    height: 250px;
+    margin: 0 auto 0.5rem;
+    border-radius: 50%;
+    background-image: url('assets/me.jpg');
+    background-size: cover;
+    background-position: 55% center; 
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  /* Caption under profile pic */
+  .caption {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 1rem;
+  }
+  
+  /* Link buttons */
+  .links {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .links a {
+    margin: 0 0.5rem;
+    font-size: 0.95rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    display: inline-block;
+  }
+  .links a:hover {
+    background: var(--accent);
+    color: white;
+  }
+  
