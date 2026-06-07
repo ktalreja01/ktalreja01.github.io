@@ -1,0 +1,71 @@
+/* ---- Barron-style layout: centered single column, table-based pub list ---- */
+body {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 40px 20px 80px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #222;
+  background: #fff;
+}
+a { color: #1772d0; text-decoration: none; }
+a:hover { color: #f09228; }
+
+.header { text-align: center; margin-bottom: 8px; }
+.header h1 { font-size: 30px; font-weight: normal; margin: 0 0 6px; }
+.header .links { font-size: 15px; }
+.header .links a { margin: 0 6px; }
+
+h2 {
+  font-size: 22px;
+  font-weight: normal;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+  margin-top: 40px;
+}
+
+#about { overflow: hidden; }
+#about p { margin: 0 0 12px; }
+.photo {
+  float: right;
+  width: 180px;
+  margin: 0 0 12px 24px;
+}
+.photo img {
+  width: 180px;
+  border-radius: 6px;
+  display: block;
+}
+.contact { color: #555; }
+
+/* News */
+#news ul { list-style: none; padding-left: 0; margin: 0; }
+#news li { margin-bottom: 6px; }
+#news .date { color: #888; display: inline-block; min-width: 90px; }
+
+/* Publications table */
+.pub { width: 100%; border-collapse: separate; border-spacing: 0 18px; }
+.pub td { vertical-align: top; }
+.pub .thumb {
+  width: 180px; padding-right: 18px;
+}
+.pub .thumb img {
+  width: 170px; height: 100px; object-fit: cover;
+  border-radius: 4px; display: block;
+}
+/* placeholder box until you add real thumbnails */
+.thumb-placeholder {
+  width: 170px; height: 100px; background: #ececec;
+  border-radius: 4px; display: flex; align-items: center;
+  justify-content: center; color: #aaa; font-size: 12px;
+}
+.pub .title { font-size: 17px; }
+.pub .title a { color: #1772d0; }
+.pub .title a:hover { color: #f09228; }
+.pub .authors { font-size: 15px; }
+.pub .authors .me { font-weight: bold; }
+.pub .venue { font-size: 15px; font-style: italic; color: #555; }
+.pub .pub-links { font-size: 14px; margin-top: 2px; }
+
+footer { text-align: center; color: #999; font-size: 13px; margin-top: 60px; }

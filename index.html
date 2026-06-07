@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kunal Talreja</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <style>
+    body {
+      margin: 0 auto;
+      max-width: 800px;
+      padding: 40px 20px 80px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #222;
+      background: #fff;
+    }
+    a { color: #1772d0; text-decoration: none; }
+    a:hover { color: #f09228; }
+
+    .header { text-align: center; margin-bottom: 8px; }
+    .header h1 { font-size: 30px; font-weight: normal; margin: 0 0 6px; }
+    .header .links { font-size: 15px; }
+    .header .links a { margin: 0 6px; }
+
+    h2 {
+      font-size: 22px;
+      font-weight: normal;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+      margin-top: 40px;
+    }
+
+    #about {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 12px;
+    }
+    #about p { margin: 0; }
+    .photo {
+      flex-shrink: 0;
+      width: 220px;
+    }
+    .photo img {
+      width: 220px;
+      border-radius: 6px;
+      display: block;
+    }
+    .photo .caption {
+      margin-top: 6px;
+      font-size: 13px;
+      font-style: italic;
+      color: #888;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      #about { flex-direction: column-reverse; text-align: center; gap: 18px; }
+      .photo { width: 200px; }
+      .photo img { width: 200px; }
+    }
+
+    #news ul { list-style: none; padding-left: 0; margin: 0; }
+    #news li { margin-bottom: 6px; }
+    #news .date { color: #888; display: inline-block; min-width: 90px; }
+
+    .pub { width: 100%; border-collapse: separate; border-spacing: 0 18px; }
+    .pub td { vertical-align: top; }
+    .pub .thumb {
+      width: 178px; padding-right: 18px;
+    }
+    .pub .thumb img {
+      width: 160px; height: 160px; object-fit: contain;
+      background: #fff; border: 1px solid #eaeaea;
+      border-radius: 4px; display: block;
+    }
+    .thumb-placeholder {
+      width: 160px; height: 160px; background: #ececec;
+      border-radius: 4px; display: flex; align-items: center;
+      justify-content: center; color: #aaa; font-size: 12px;
+    }
+    .pub .title { font-size: 17px; }
+    .pub .title a { color: #1772d0; }
+    .pub .title a:hover { color: #f09228; }
+    .pub .authors { font-size: 15px; }
+    .pub .authors .me { font-weight: bold; }
+    .pub .venue { font-size: 15px; font-style: italic; color: #555; }
+    .pub .pub-links { font-size: 14px; margin-top: 2px; }
+
+    .bib-toggle { color: #1772d0; cursor: pointer; }
+    .bib-toggle:hover { color: #f09228; }
+    .bib-toggle:focus { outline: 1px dotted #1772d0; }
+    .bibtex {
+      display: none;
+      position: relative;
+      margin-top: 8px;
+      background: #f6f6f6;
+      border: 1px solid #e2e2e2;
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    .bibtex.open { display: block; }
+    .bibtex pre {
+      margin: 0;
+      padding-right: 56px;
+      font-family: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #333;
+    }
+    .bibtex .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-family: Georgia, serif;
+      font-size: 12px;
+      padding: 2px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+    }
+    .bibtex .copy-btn:hover { color: #f09228; border-color: #f09228; }
+
+    footer { text-align: center; color: #999; font-size: 13px; margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>Kunal Talreja</h1>
+    <div class="links">
+      <a href="https://scholar.google.com/citations?user=B_X9xMAAAAAJ&hl=en" target="_blank">Google Scholar</a> /
+      <span class="contact">ktalreja6 [at] gatech [dot] edu</span>
+    </div>
+  </header>
+
+  <section id="about">
+    <p>I am a student at Georgia Tech studying electrical engineering and mathematics. I am interested in information theory, machine learning, and signal processing. Currently, I am working with <a href="https://amirmohan.github.io/" target="_blank">Amirali Aghazadeh</a> and <a href="https://sites.google.com/view/viveck-cadambe/home" target="_blank">Viveck Cadambe</a>. I am currently applying to Ph.D. programs for Fall 2027.</p>
+    <div class="photo">
+      <img src="assets/me.jpg" alt="Kunal Talreja">
+      <div class="caption">Sydney Harbor Bridge</div>
+    </div>
+  </section>
+
+  <section id="news">
+    <h2>News</h2>
+    <ul>
+      <li><span class="date">April 2026</span> &mdash; <em>Protein Circuit Tracing via Cross-Layer Transcoders</em> accepted to ICML 2026!</li>
+      <li><span class="date">October 2025</span> &mdash; I presented our work <em>Efficient Algorithm for Sparse Fourier Transform of Generalized q-ary Functions</em> at the IEEE Information Theory Workshop (ITW) 2025 in Sydney, Australia, with financial support from a <em> PURA Travel Award</em>.</li>
+      <li><span class="date">September 2025</span> &mdash; <em>Sparse Autoencoders for Low-N Protein Function Prediction and Design</em> accepted to NeurIPS 2025 AI4Science!</li>
+      <li><span class="date">July 2025</span> &mdash; Awarded the <em>President's Undergraduate Research Award (PURA)</em> for Fall 2025!</li>
+    </ul>
+  </section>
+
+  <section id="publications">
+    <h2>Publications (* denotes equal contribution)</h2>
+    <table class="pub">
+
+      <tr>
+        <td class="thumb">
+          <img src="assets/protomech.png" alt="Protein Circuit Tracing thumbnail">
+        </td>
+        <td>
+          <div class="title"><a href="#">Protein Circuit Tracing via Cross-Layer Transcoders</a></div>
+          <div class="authors">
+            Darin Tsui, <span class="me">Kunal Talreja</span>, Danial Saeedi, Amirali Aghazadeh
+          </div>
+          <div class="venue">ICML 2026</div>
+          <div class="pub-links">
+            <a href="https://arxiv.org/abs/2602.12026" target="_blank">arXiv</a> /
+            <a href="https://github.com/amirgroup-codes/ProtoMech" target="_blank">code</a> /
+            <span class="bib-toggle" onclick="toggleBib('bib-clt')">bibtex</span>
+          </div>
+          <div class="bibtex" id="bib-clt">
+            <button class="copy-btn" onclick="copyBib('bib-clt', this)">copy</button>
+            <pre>@misc{tsui2026proteincircuittracingcrosslayer,
+      title={Protein Circuit Tracing via Cross-layer Transcoders}, 
+      author={Darin Tsui and Kunal Talreja and Daniel Saeedi and Amirali Aghazadeh},
+      year={2026},
+      eprint={2602.12026},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2602.12026}, 
+}</pre>
+          </div>
+        </td>
+      </tr>
+
+            <tr>
+        <td class="thumb">
+          <img src="assets/sae.png" alt="Sparse Autoencoders thumbnail">
+        </td>
+        <td>
+          <div class="title"><a href="#">Sparse Autoencoders for Low-N Protein Function Prediction and Design</a></div>
+          <div class="authors">
+            Darin Tsui, <span class="me">Kunal Talreja</span>, Amirali Aghazadeh
+          </div>
+          <div class="venue">NeurIPS 2025 AI4Science Workshop</div>
+          <div class="pub-links">
+            <a href="https://arxiv.org/abs/2508.18567" target="_blank">arXiv</a> /
+            <a href="https://github.com/amirgroup-codes/LowNSAE" target="_blank">code</a> /
+            <span class="bib-toggle" onclick="toggleBib('bib-sae')">bibtex</span>
+          </div>
+          <div class="bibtex" id="bib-sae">
+            <button class="copy-btn" onclick="copyBib('bib-sae', this)">copy</button>
+            <pre>@misc{tsui2025sparseautoencoderslownprotein,
+      title={Sparse Autoencoders for Low-$N$ Protein Function Prediction and Design}, 
+      author={Darin Tsui and Kunal Talreja and Amirali Aghazadeh},
+      year={2025},
+      eprint={2508.18567},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2508.18567}, 
+}</pre>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="thumb">
+          <img src="assets/fourier.png" alt="Sparse Fourier Transform thumbnail">
+        </td>
+        <td>
+          <div class="title"><a href="#">Efficient Algorithm for Sparse Fourier Transform of Generalized q-ary Functions</a></div>
+          <div class="authors">
+            Darin Tsui*, <span class="me">Kunal Talreja</span>*, Amirali Aghazadeh
+          </div>
+          <div class="venue">IEEE Information Theory Workshop (ITW) 2025</div>
+          <div class="pub-links">
+            <a href="https://arxiv.org/abs/2501.12365" target="_blank">arXiv</a> /
+            <a href="https://github.com/amirgroup-codes/GFast" target="_blank">code</a> /
+            <span class="bib-toggle" onclick="toggleBib('bib-fourier')">bibtex</span>
+          </div>
+          <div class="bibtex" id="bib-fourier">
+            <button class="copy-btn" onclick="copyBib('bib-fourier', this)">copy</button>
+            <pre>@misc{tsui2025efficientalgorithmsparsefourier,
+      title={Efficient Algorithm for Sparse Fourier Transform of Generalized $q$-ary Functions}, 
+      author={Darin Tsui and Kunal Talreja and Amirali Aghazadeh},
+      year={2025},
+      eprint={2501.12365},
+      archivePrefix={arXiv},
+      primaryClass={cs.CC},
+      url={https://arxiv.org/abs/2501.12365}, 
+}</pre>
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </section>
+
+  <footer>
+    <p>Template adapted from <a href="https://jonbarron.info/" target="_blank">Jon Barron</a></p>
+  </footer>
+
+  <script>
+    function toggleBib(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+    function copyBib(id, btn) {
+      var text = document.getElementById(id).querySelector('pre').textContent;
+      var done = function () {
+        var label = btn.textContent;
+        btn.textContent = 'copied!';
+        setTimeout(function () { btn.textContent = label; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    }
+    function fallbackCopy(text, done) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    document.querySelectorAll('.bib-toggle').forEach(function (el) {
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+      });
+    });
+  </script>
+
+</body>
+</html>
