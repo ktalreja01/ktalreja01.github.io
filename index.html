@@ -161,6 +161,7 @@
   <section id="news">
     <h2>News</h2>
     <ul>
+      <li><span class="date">July 2026</span> &mdash; Our new preprint <a href="https://www.biorxiv.org/content/10.64898/2026.07.08.737351v1" target="_blank"><em>Protein fitness landscapes are simpler under evolutionary distributions</em></a> is now on bioRxiv!</li>
       <li><span class="date">April 2026</span> &mdash; <em>Protein Circuit Tracing via Cross-Layer Transcoders</em> accepted to ICML 2026!</li>
       <li><span class="date">October 2025</span> &mdash; I presented our work <em>Efficient Algorithm for Sparse Fourier Transform of Generalized q-ary Functions</em> at the IEEE Information Theory Workshop (ITW) 2025 in Sydney, Australia, with financial support from a <em> PURA Travel Award</em>.</li>
       <li><span class="date">September 2025</span> &mdash; <em>Sparse Autoencoders for Low-N Protein Function Prediction and Design</em> accepted to NeurIPS 2025 AI4Science!</li>
@@ -171,6 +172,39 @@
   <section id="publications">
     <h2>Select Publications (* denotes equal contribution)</h2>
     <table class="pub">
+
+      <tr>
+        <td class="thumb">
+          <img src="assets/protein-landscapes.png" alt="Protein fitness landscapes thumbnail">
+        </td>
+        <td>
+          <div class="title">Protein fitness landscapes are simpler under evolutionary distributions</div>
+          <div class="authors">
+            Darin Tsui, <span class="me">Kunal Talreja</span>, Amirali Aghazadeh
+          </div>
+          <div class="venue">bioRxiv, 2026</div>
+          <div class="pub-links">
+            <a href="https://www.biorxiv.org/content/10.64898/2026.07.08.737351v1" target="_blank">bioRxiv</a> /
+            <a href="https://github.com/amirgroup-codes/eWHT_expts" target="_blank">code</a> /
+            <span class="bib-toggle" onclick="toggleBib('bib-ewht')">bibtex</span>
+          </div>
+          <div class="bibtex" id="bib-ewht">
+            <button class="copy-btn" onclick="copyBib('bib-ewht', this)">copy</button>
+            <pre>@article {Tsui2026.07.08.737351,
+      author = {Tsui, Darin and Talreja, Kunal and Aghazadeh, Amirali},
+      title = {Protein fitness landscapes are simpler under evolutionary distributions},
+      elocation-id = {2026.07.08.737351},
+      year = {2026},
+      doi = {10.64898/2026.07.08.737351},
+      publisher = {Cold Spring Harbor Laboratory},
+      abstract = {Understanding how mutations combine to shape protein fitness remains a central challenge in biology, driven in part by the prevalence of high-order epistasis. Existing analyses of epistasis, however, implicitly define epistatic interactions under a uniform probability measure over sequence space, even though evolution constrains natural proteins to a highly structured, non-uniform distribution of sequences. Here, we show that the apparent complexity of protein epistasis depends fundamentally on the underlying evolutionary distribution of sequences. We develop an evolution-aware spectral framework that incorporates the evolutionary distribution of amino acids at each sequence position, inducing an orthogonal decomposition under the evolutionary measure while preserving efficient spectral algorithms for scalable analysis. Across diverse protein fitness landscapes, this framework consistently produces more compact spectral representations, explaining more phenotypic variation with fewer epistatic interactions while substantially reducing apparent high-order epistasis. It also enables more accurate recovery of fitness landscapes from limited experimental measurements and concentrates the remaining higher-order interactions into localized, structurally interpretable motifs. These results suggest that a substantial fraction of apparent high-order epistasis arises from defining epistatic interactions under a uniform measure over sequence space and can be resolved by aligning spectral analysis with evolutionary constraints.Competing Interest StatementThe authors have declared no competing interest.},
+      URL = {https://www.biorxiv.org/content/early/2026/07/10/2026.07.08.737351},
+      eprint = {https://www.biorxiv.org/content/early/2026/07/10/2026.07.08.737351.full.pdf},
+      journal = {bioRxiv}
+}</pre>
+          </div>
+        </td>
+      </tr>
 
       <tr>
         <td class="thumb">
