@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProGen3 logit lens</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.viz-root {
+  color-scheme: light;
+  --surface-0: #f4f3f0;
+  --surface-1: #fcfcfb;
+  --border: #e2e1dc;
+  --grid: #ecebe7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #8a8984;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --feat-binding: #eb6834;
+  --feat-active: #6250d6;
+  --feat-disulfide: #1baf7a;
+  --feat-modified: #e87ba4;
+  --feat-mutagenesis: #eda100;
+  --feat-span: #b9b8b2;
+  --pin: #0b0b0b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    color-scheme: dark;
+    --surface-0: #111110;
+    --surface-1: #1a1a19;
+    --border: #2e2e2c;
+    --grid: #262624;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8a8984;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --feat-binding: #d95926;
+    --feat-active: #9085e9;
+    --feat-disulfide: #199e70;
+    --feat-modified: #d55181;
+    --feat-mutagenesis: #c98500;
+    --feat-span: #55544f;
+    --pin: #f0efec;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.viz-root {
+  background: var(--surface-0); color: var(--text-primary);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 100vh; padding: 20px 28px 40px;
+}
+h1 { font-size: 20px; margin: 0; font-weight: 650; }
+h2 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+.sub { color: var(--text-secondary); font-size: 13px; }
+.muted { color: var(--text-muted); }
+header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.controls { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; }
+label.ctl { font-size: 12px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+select, button {
+  font: inherit; font-size: 13px; color: var(--text-primary); background: var(--surface-1);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px;
+}
+button { cursor: pointer; }
+button.on { background: var(--text-primary); color: var(--surface-1); }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+.protein-head { display: flex; gap: 24px; flex-wrap: wrap; align-items: baseline; }
+.stats { display: flex; gap: 22px; margin-left: auto; }
+.stat .v { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+details { margin-top: 6px; font-size: 13px; color: var(--text-secondary); }
+summary { cursor: pointer; color: var(--text-muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  display: inline-flex; gap: 6px; align-items: center; font-size: 12px; padding: 2px 8px;
+  border: 1px solid var(--border); border-radius: 999px; cursor: pointer; background: var(--surface-0);
+  color: var(--text-secondary);
+}
+.chip:hover { border-color: var(--text-muted); }
+.sw { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex: none; }
+.heat-wrap { display: flex; }
+.heat-labels { flex: none; font-size: 11px; color: var(--text-secondary); text-align: right; padding-right: 6px; font-variant-numeric: tabular-nums; }
+.heat-labels div { display: flex; align-items: center; justify-content: flex-end; }
+.heat-scroll { overflow-x: auto; flex: 1; position: relative; }
+canvas { display: block; }
+.legend-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
+.ramp { display: flex; align-items: center; gap: 6px; }
+.ramp-bar { width: 160px; height: 10px; border-radius: 2px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } }
+table.col { border-collapse: separate; border-spacing: 2px; font-size: 12px; font-variant-numeric: tabular-nums; width: 100%; }
+table.col th { font-weight: 500; color: var(--text-muted); text-align: left; padding: 0 4px; }
+table.col td { padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
+table.col td.lay { color: var(--text-secondary); text-align: right; width: 36px; }
+table.col td.tok { min-width: 64px; }
+table.col td.hit { outline: 2px solid var(--series-2); outline-offset: -2px; }
+.ctx { font-family: ui-monospace, Menlo, monospace; letter-spacing: .08em; }
+.ctx b { color: var(--series-2); }
+#tip {
+  position: fixed; pointer-events: none; z-index: 10; display: none; min-width: 200px; max-width: 320px;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px;
+  font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.14);
+}
+#tip .bars div { display: grid; grid-template-columns: 16px 1fr 44px; gap: 6px; align-items: center; }
+#tip .bar { height: 8px; border-radius: 0 4px 4px 0; background: var(--series-1); }
+#tip .bar.hit { background: var(--series-2); }
+.mono { font-family: ui-monospace, Menlo, monospace; }
+svg text { fill: var(--text-secondary); font-size: 11px; }
+.hint { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <header>
+    <h1>ProGen3 logit lens</h1>
+    <span class="sub" id="model-name"></span>
+    <div class="controls">
+      <label class="ctl">Protein <select id="sel-protein"></select></label>
+      <label class="ctl">Color by
+        <select id="sel-metric">
+          <option value="p_true">p(true next residue)</option>
+          <option value="conf">top-1 probability</option>
+          <option value="rank">rank of true residue</option>
+          <option value="kl">KL(final ‖ layer)</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="protein-head">
+      <div>
+        <h2 id="p-name"></h2>
+        <div class="sub" id="p-meta"></div>
+      </div>
+      <div class="stats" id="p-stats"></div>
+    </div>
+    <details><summary>UniProt function</summary><div id="p-func"></div></details>
+    <div class="chips" id="p-feats"></div>
+  </div>
+
+  <div class="card">
+    <h2>What each layer predicts for the next residue</h2>
+    <div class="hint">Each cell shows the lens's top-1 residue at that layer (rows) for that position (columns), colored by the selected metric. Column <i>k</i> = prediction of residue <i>k</i> from residues 1…<i>k−1</i>. Hover to inspect; click a column to pin it below.</div>
+    <div class="heat-wrap" style="margin-top:10px">
+      <div class="heat-labels" id="heat-labels"></div>
+      <div class="heat-scroll" id="heat-scroll"><canvas id="heat"></canvas></div>
+    </div>
+    <div class="legend-row" id="legend"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2 id="col-title">Pinned position</h2>
+      <div class="sub" id="col-sub"></div>
+      <div id="col-body" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap">
+        <h2 id="sum-title">By layer</h2>
+        <div style="margin-left:auto; display:flex; gap:4px">
+          <button id="scope-one" class="on">This protein</button>
+          <button id="scope-all">All proteins</button>
+        </div>
+      </div>
+      <div class="sub" id="sum-sub"></div>
+      <div class="legend-row" style="margin:6px 0 0">
+        <span class="ramp"><span class="sw" style="background:var(--series-1)"></span>All positions</span>
+        <span class="ramp"><span class="sw" style="background:var(--series-2)"></span>ntp_evaluation feature sites (one per CSV row)</span>
+      </div>
+      <div id="sum-chart" style="position:relative"></div>
+    </div>
+  </div>
+  <div id="tip"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.LENS_DATA;
+const NL = D.layers.length;
+const CW = 16, CH = 20, TRACK = 22, AXIS = 34;
+const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(v).trim();
+
+// Sequential blue ramp (100 -> 700). Dark mode runs it from the surface end upward.
+const RAMP = ['#f4f8fd', '#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b'];
+const RAMP_DARK = ['#1d2430', '#16263d', '#104281', '#184f95', '#1c5cab', '#256abf', '#2a78d6', '#3987e5', '#5598e7', '#86b6ef', '#b7d3f6'];
+const isDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+function hex2rgb(h) { return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function rampColor(t) {
+  const R = isDark() ? RAMP_DARK : RAMP;
+  t = Math.max(0, Math.min(1, t)) * (R.length - 1);
+  const i = Math.min(Math.floor(t), R.length - 2), f = t - i;
+  const a = hex2rgb(R[i]), b = hex2rgb(R[i + 1]);
+  return `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * f)).join(',')})`;
+}
+function inkOn(t) { return isDark() ? (t > 0.7 ? '#0b0b0b' : '#f0efec') : (t > 0.45 ? '#ffffff' : '#0b0b0b'); }
+
+const METRICS = {
+  p_true: { label: 'p(true next residue)', val: (p, l, k) => p.p_true[l][k], t: v => v, ticks: [[0, '0'], [0.5, '0.5'], [1, '1']],
+            sum: 'Mean p(true next residue)', agg: v => v, fmt: v => v.toFixed(3) },
+  conf:   { label: 'top-1 probability', val: (p, l, k) => p.top_p[l][k][0], t: v => v, ticks: [[0, '0'], [0.5, '0.5'], [1, '1']],
+            sum: 'Mean top-1 probability (confidence)', agg: v => v, fmt: v => v.toFixed(3) },
+  rank:   { label: 'rank of true residue (log scale)', val: (p, l, k) => p.rank_true[l][k], t: v => 1 - Math.log(v) / Math.log(20),
+            ticks: [[0, '20+'], [1 - Math.log(5) / Math.log(20), '5'], [1 - Math.log(2) / Math.log(20), '2'], [1, '1']],
+            sum: 'Top-1 accuracy (true residue ranked first)', agg: v => +(v === 1), fmt: v => (100 * v).toFixed(1) + '%' },
+  kl:     { label: 'KL(final ‖ layer), nats', val: (p, l, k) => p.kl[l][k], t: v => v / 4, ticks: [[0, '0'], [0.5, '2'], [1, '4+']],
+            sum: 'Mean KL(final ‖ layer), nats', agg: v => v, fmt: v => v.toFixed(2) },
+};
+
+const FEAT_COLOR = { binding: '--feat-binding', active_site: '--feat-active', disulfide: '--feat-disulfide',
+                     modified_residue: '--feat-modified', mutagenesis: '--feat-mutagenesis' };
+const featVar = f => FEAT_COLOR[f.type] || '--feat-span';
+const isSpanType = f => !(f.type in FEAT_COLOR);
+
+// Positions scored by ntp_evaluation/evaluate_clt.py: one per CSV row (feature_position),
+// all feature types, duplicates kept so averages weight rows exactly as the eval does.
+function sitePositions(p) {
+  return p.features.map(f => f.pos).filter(i => i >= 1 && i <= p.seq.length).sort((a, b) => a - b);
+}
+const isScored = (p, pos) => p.features.some(f => f.pos === pos);
+function featuresAt(p, pos) {
+  return p.features.filter(f => f.type === 'disulfide' ? (pos === f.start || pos === f.end) : (pos >= f.start && pos <= f.end));
+}
+
+let P = D.proteins[0], metric = 'p_true', pinned = null, scopeAll = false, hover = null;
+
+// ---------- header / protein card ----------
+$('model-name').textContent = `${D.model} · ${NL - 1} layers · residual stream → final RMSNorm → lm_head`;
+D.proteins.forEach((p, i) => {
+  const o = document.createElement('option');
+  o.value = i; o.textContent = `${p.entry} · ${p.name.split(' (')[0]} (${p.seq.length} aa)`;
+  $('sel-protein').appendChild(o);
+});
+$('sel-protein').onchange = e => { P = D.proteins[+e.target.value]; pinned = null; renderAll(); };
+$('sel-metric').onchange = e => { metric = e.target.value; renderHeat(); renderLegend(); renderSummary(); renderColumn(); };
+$('scope-one').onclick = () => { scopeAll = false; $('scope-one').classList.add('on'); $('scope-all').classList.remove('on'); renderSummary(); };
+$('scope-all').onclick = () => { scopeAll = true; $('scope-all').classList.add('on'); $('scope-one').classList.remove('on'); renderSummary(); };
+
+function renderCard() {
+  $('p-name').textContent = P.name;
+  $('p-meta').textContent = `${P.entry} · ${P.organism} · ${P.seq.length} aa`;
+  $('p-func').textContent = P.function.replace(/^FUNCTION:\s*/, '') || '—';
+  const L = P.seq.length, last = NL - 1;
+  const acc = P.rank_true[last].filter(r => r === 1).length / L;
+  const sites = sitePositions(P);
+  const siteAcc = sites.length ? sites.filter(i => P.rank_true[last][i - 1] === 1).length / sites.length : NaN;
+  // First layer from which the lens's top-1 matches the final top-1 and stays matched.
+  const settle = []; for (let k = 0; k < L; k++) {
+    let l = last; while (l > 0 && P.top_i[l - 1][k][0] === P.top_i[last][k][0]) l--; settle.push(l);
+  }
+  const medSettle = settle.slice().sort((a, b) => a - b)[Math.floor(L / 2)];
+  $('p-stats').innerHTML = [
+    [(100 * acc).toFixed(0) + '%', 'final top-1 acc'],
+    [isNaN(siteAcc) ? '—' : (100 * siteAcc).toFixed(0) + '%', `at ${sites.length} ntp_eval sites`],
+    [D.layers[medSettle], 'median settle layer'],
+  ].map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('');
+  const chips = $('p-feats'); chips.innerHTML = '';
+  P.features.slice().sort((a, b) => a.start - b.start).forEach(f => {
+    const c = document.createElement('span'); c.className = 'chip';
+    const where = f.start === f.end ? `${f.aa}${f.pos}` : `${f.start}–${f.end}`;
+    c.innerHTML = `<span class="sw" style="background:var(${featVar(f)})"></span>${f.type.replace('_', ' ')} ${where}${f.desc ? ' · ' + f.desc.slice(0, 40) : ''}`;
+    c.onclick = () => { pin(f.pos - 1); scrollToCol(f.pos - 1); };
+    chips.appendChild(c);
+  });
+}
+
+// ---------- heatmap ----------
+const canvas = $('heat'), ctx = canvas.getContext('2d');
+function geom() { return { W: P.seq.length * CW, H: TRACK + NL * CH + CH + AXIS }; }
+const rowY = l => TRACK + (NL - 1 - l) * CH;   // final layer on top
+
+function renderLabels() {
+  const lab = $('heat-labels'); lab.innerHTML = '';
+  const add = (txt, h, extra = '') => { const d = document.createElement('div'); d.style.height = h + 'px'; d.innerHTML = txt; d.style.cssText += extra; lab.appendChild(d); };
+  add('features', TRACK, 'color:var(--text-muted)');
+  for (let l = NL - 1; l >= 0; l--) add(D.layers[l] + (l === NL - 1 ? ' <span class="muted">(out)</span>' : ''), CH);
+  add('true', CH, 'color:var(--text-primary);font-weight:600');
+  add('', AXIS);
+}
+
+function renderHeat() {
+  const { W, H } = geom(), dpr = devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  const M = METRICS[metric], L = P.seq.length;
+
+  // feature track: span extents as thin gray bars (context only); one tick per scored
+  // ntp_eval position (feature_position), colored by feature type
+  for (const f of P.features.filter(isSpanType)) {
+    ctx.fillStyle = css('--feat-span');
+    ctx.beginPath(); ctx.roundRect((f.start - 1) * CW + 1, 15, (f.end - f.start + 1) * CW - 2, 4, 2); ctx.fill();
+  }
+  for (const f of P.features.slice().sort((a, b) => isSpanType(b) - isSpanType(a))) {
+    ctx.fillStyle = css(featVar(f));
+    ctx.beginPath(); ctx.roundRect((f.pos - 1) * CW + 3, 2, CW - 6, 11, 2); ctx.fill();
+  }
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '600 11px ui-monospace, Menlo, monospace';
+  for (let l = 0; l < NL; l++) {
+    const y = rowY(l);
+    for (let k = 0; k < L; k++) {
+      const t = Math.max(0, Math.min(1, M.t(M.val(P, l, k))));
+      ctx.fillStyle = rampColor(t);
+      ctx.fillRect(k * CW, y, CW - 1, CH - 1);
+      ctx.fillStyle = inkOn(t);
+      ctx.fillText(D.vocab[P.top_i[l][k][0]], k * CW + (CW - 1) / 2, y + CH / 2);
+    }
+  }
+  // true residue row + position axis
+  const yT = TRACK + NL * CH;
+  ctx.fillStyle = css('--text-primary');
+  for (let k = 0; k < L; k++) ctx.fillText(P.seq[k], k * CW + (CW - 1) / 2, yT + CH / 2 + 1);
+  ctx.font = '10px system-ui, sans-serif'; ctx.fillStyle = css('--text-muted');
+  for (let k = 0; k < L; k++) if ((k + 1) % 10 === 0 || k === 0) {
+    ctx.fillRect(k * CW + (CW - 1) / 2, yT + CH + 1, 1, 4);
+    ctx.fillText(String(k + 1), k * CW + (CW - 1) / 2, yT + CH + 13);
+  }
+  // pinned / hovered column outlines
+  for (const [k, w] of [[pinned, 2], [hover && hover.k, 1]]) {
+    if (k == null) continue;
+    ctx.strokeStyle = css('--pin'); ctx.lineWidth = w;
+    ctx.strokeRect(k * CW - 0.5 + w / 2, TRACK - 1, CW - w + 0.5, NL * CH + CH + 1);
+  }
+}
+const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+
+function scrollToCol(k) {
+  const s = $('heat-scroll'); s.scrollTo({ left: Math.max(0, k * CW - s.clientWidth / 2), behavior: 'smooth' });
+}
+
+function renderLegend() {
+  const M = METRICS[metric];
+  const stops = range(0, 10).map(i => rampColor(i / 10)).join(',');
+  const ticks = M.ticks.map(([t, s]) => `<span style="position:absolute;left:${t * 160}px;transform:translateX(-50%)">${s}</span>`).join('');
+  const sw = Object.entries({ binding: 'binding', active_site: 'active site', disulfide: 'disulfide', modified_residue: 'modified residue', mutagenesis: 'mutagenesis' })
+    .filter(([k]) => D.proteins.some(p => p.features.some(f => f.type === k)))
+    .map(([k, s]) => `<span class="ramp"><span class="sw" style="background:var(${FEAT_COLOR[k]})"></span>${s}</span>`).join('');
+  $('legend').innerHTML =
+    `<span class="ramp">${M.label}: <span style="position:relative;display:inline-block">
+       <span class="ramp-bar" style="display:block;background:linear-gradient(90deg,${stops})"></span>
+       <span style="position:relative;display:block;height:14px;font-size:10px">${ticks}</span></span></span>
+     <span class="ramp">Feature track:</span>${sw}
+     <span class="ramp"><span class="sw" style="background:var(--feat-span);height:4px"></span>domain / region / TM / signal extent (gray tick = its scored midpoint)</span>`;
+}
+
+// hover + click
+function cellAt(e) {
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  const k = Math.floor(x / CW); if (k < 0 || k >= P.seq.length) return null;
+  let l = null;
+  if (y >= TRACK && y < TRACK + NL * CH) l = NL - 1 - Math.floor((y - TRACK) / CH);
+  return { k, l, inTrack: y < TRACK };
+}
+canvas.addEventListener('mousemove', e => {
+  const c = cellAt(e);
+  const changed = (c && c.k) !== (hover && hover.k);
+  hover = c; if (changed) renderHeat();
+  if (!c) return hideTip();
+  showTip(e, tipHTML(c));
+});
+canvas.addEventListener('mouseleave', () => { hover = null; hideTip(); renderHeat(); });
+canvas.addEventListener('click', e => { const c = cellAt(e); if (c) pin(c.k); });
+
+function context(k, n = 8) {
+  const s = Math.max(0, k - n);
+  return `<span class="ctx">${s > 0 ? '…' : ''}${P.seq.slice(s, k)}<b>${P.seq[k]}</b></span>`;
+}
+function featLine(k) {
+  const fs = featuresAt(P, k + 1);
+  const scored = isScored(P, k + 1) ? '<div style="margin-top:6px"><b>Scored in ntp_evaluation</b></div>' : '';
+  return scored + (fs.length ? `<div style="margin-top:4px">${fs.map(f => `<div><span class="sw" style="background:var(${featVar(f)})"></span> ${f.type.replace('_', ' ')} ${f.start === f.end ? f.pos : f.start + '–' + f.end}${f.desc ? ': ' + f.desc : ''}${f.pos === k + 1 ? '' : ' <span class="muted">(not scored here)</span>'}</div>`).join('')}</div>` : '');
+}
+function tipHTML({ k, l, inTrack }) {
+  const head = `<div><b>Position ${k + 1}</b> · true residue <b class="mono">${P.seq[k]}</b></div><div style="margin-top:2px">${context(k)}</div>`;
+  if (l == null) return head + (featLine(k) || (inTrack ? '<div class="muted" style="margin-top:4px">no annotation</div>' : ''));
+  const tp = P.top_p[l][k], ti = P.top_i[l][k], tgt = P.seq[k];
+  const bars = ti.map((id, j) => `<div><span class="mono"><b>${D.vocab[id]}</b></span>
+      <span class="bar${D.vocab[id] === tgt ? ' hit' : ''}" style="width:${Math.max(2, tp[j] * 100)}%"></span>
+      <span style="text-align:right">${tp[j].toFixed(3)}</span></div>`).join('');
+  return `${head}<div style="margin:6px 0 4px;color:var(--text-secondary)">Layer <b>${D.layers[l]}</b> lens, top 5</div>
+    <div class="bars">${bars}</div>
+    <div style="margin-top:6px;color:var(--text-secondary)">p(${tgt}) = <b>${P.p_true[l][k].toFixed(3)}</b> · rank ${P.rank_true[l][k]} · KL→final ${P.kl[l][k].toFixed(2)} · H ${P.entropy[l][k].toFixed(2)}</div>
+    ${featLine(k)}`;
+}
+const tip = $('tip');
+function showTip(e, html) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hideTip() { tip.style.display = 'none'; }
+
+// ---------- pinned column ----------
+function pin(k) { pinned = k; renderHeat(); renderColumn(); }
+function renderColumn() {
+  if (pinned == null) {
+    const s = sitePositions(P);
+    $('col-title').textContent = 'Pinned position';
+    $('col-sub').textContent = 'Click a column in the heatmap (or a feature chip above) to see its full layer-by-layer top-5.';
+    $('col-body').innerHTML = s.length ? `<button id="pin-first">Pin first ntp_eval site (${P.seq[s[0] - 1]}${s[0]})</button>` : '';
+    if (s.length) $('pin-first').onclick = () => { pin(s[0] - 1); scrollToCol(s[0] - 1); };
+    return;
+  }
+  const k = pinned, tgt = P.seq[k];
+  $('col-title').innerHTML = `Position ${k + 1}: predicting <span class="mono">${tgt}</span>`;
+  $('col-sub').innerHTML = `Context ${context(k, 14)}${featLine(k)}`;
+  let rows = '';
+  for (let l = NL - 1; l >= 0; l--) {
+    const cells = P.top_i[l][k].map((id, j) => {
+      const p = P.top_p[l][k][j], t = p;
+      return `<td class="tok${D.vocab[id] === tgt ? ' hit' : ''}" style="background:${rampColor(t)};color:${inkOn(t)}"><b class="mono">${D.vocab[id]}</b> ${p.toFixed(2)}</td>`;
+    }).join('');
+    rows += `<tr><td class="lay">${D.layers[l]}</td>${cells}<td>${P.p_true[l][k].toFixed(3)}</td><td>${P.rank_true[l][k]}</td></tr>`;
+  }
+  $('col-body').innerHTML = `<table class="col"><tr><th></th><th>top 1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>p(${tgt})</th><th>rank</th></tr>${rows}</table>
+    <div class="hint" style="margin-top:6px">Cells shaded by probability; outlined cell = the true residue.</div>`;
+}
+
+// ---------- layer summary chart ----------
+function summarize() {
+  const M = METRICS[metric], ps = scopeAll ? D.proteins : [P];
+  const all = Array(NL).fill(0), site = Array(NL).fill(0); let nA = 0, nS = 0;
+  for (const p of ps) {
+    const rows = Array(p.seq.length).fill(0);   // ntp_eval CSV rows scored at each position
+    for (const i of sitePositions(p)) rows[i - 1]++;
+    for (let k = 0; k < p.seq.length; k++) {
+      nA++; nS += rows[k];
+      for (let l = 0; l < NL; l++) {
+        const v = M.agg(M.val(p, l, k)); all[l] += v; site[l] += rows[k] * v;
+      }
+    }
+  }
+  return { all: all.map(v => v / nA), site: nS ? site.map(v => v / nS) : null, nA, nS };
+}
+function renderSummary() {
+  const M = METRICS[metric], S = summarize();
+  $('sum-title').textContent = M.sum + ' by layer';
+  $('sum-sub').textContent = `${scopeAll ? D.proteins.length + ' proteins' : P.entry}: ${S.nA} positions, ${S.nS} ntp_evaluation feature rows`;
+  const box = $('sum-chart'), W = Math.max(320, box.clientWidth || 440), H = 240;
+  const m = { l: 46, r: 64, t: 14, b: 28 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const vals = S.all.concat(S.site || []), ymax = Math.max(...vals) * 1.08 || 1;
+  const x = l => m.l + (l / (NL - 1)) * iw, y = v => m.t + ih - (v / ymax) * ih;
+  const nice = niceTicks(ymax, 4);
+  const line = (arr, c) => `<path d="${arr.map((v, l) => (l ? 'L' : 'M') + x(l).toFixed(1) + ',' + y(v).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`;
+  const label = (arr, c, txt) => `<text x="${x(NL - 1) + 8}" y="${y(arr[NL - 1]) + 4}" style="fill:var(--text-secondary)">${txt}</text>`;
+  let ys = [y(S.all[NL - 1]), S.site ? y(S.site[NL - 1]) : null];
+  if (S.site && Math.abs(ys[0] - ys[1]) < 13) { const mid = (ys[0] + ys[1]) / 2, d = ys[0] > ys[1] ? 7 : -7; ys = [mid + d, mid - d]; }
+  box.innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="${M.sum} per layer">
+    ${nice.map(v => `<line x1="${m.l}" x2="${m.l + iw}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${M.fmt(v)}</text>`).join('')}
+    ${D.layers.map((s, l) => `<text x="${x(l)}" y="${H - 8}" text-anchor="middle">${s}</text>`).join('')}
+    ${line(S.all, 'var(--series-1)')}${S.site ? line(S.site, 'var(--series-2)') : ''}
+    <text x="${x(NL - 1) + 8}" y="${ys[0] + 4}">all</text>
+    ${S.site ? `<text x="${x(NL - 1) + 8}" y="${ys[1] + 4}">sites</text>` : ''}
+    <line id="xh" y1="${m.t}" y2="${m.t + ih}" stroke="var(--text-muted)" stroke-dasharray="3 3" style="display:none"/>
+    <g id="dots"></g>
+    <rect x="${m.l - 10}" y="${m.t}" width="${iw + 20}" height="${ih}" fill="transparent" id="hit"/>
+  </svg>`;
+  const hit = box.querySelector('#hit'), xh = box.querySelector('#xh'), dots = box.querySelector('#dots');
+  hit.addEventListener('mousemove', e => {
+    const r = hit.getBoundingClientRect(), l = Math.max(0, Math.min(NL - 1, Math.round((e.clientX - r.left - 10) / iw * (NL - 1))));
+    xh.setAttribute('x1', x(l)); xh.setAttribute('x2', x(l)); xh.style.display = '';
+    dots.innerHTML = [[S.all, '--series-1'], [S.site, '--series-2']].filter(([a]) => a)
+      .map(([a, c]) => `<circle cx="${x(l)}" cy="${y(a[l])}" r="4.5" fill="var(${c})" stroke="var(--surface-1)" stroke-width="2"/>`).join('');
+    showTip(e, `<b>Layer ${D.layers[l]}</b><div style="margin-top:4px"><span class="sw" style="background:var(--series-1)"></span> All positions: <b>${M.fmt(S.all[l])}</b></div>` +
+      (S.site ? `<div><span class="sw" style="background:var(--series-2)"></span> ntp_eval sites: <b>${M.fmt(S.site[l])}</b></div>` : ''));
+  });
+  hit.addEventListener('mouseleave', () => { xh.style.display = 'none'; dots.innerHTML = ''; hideTip(); });
+}
+function niceTicks(max, n) {
+  const raw = max / n, mag = 10 ** Math.floor(Math.log10(raw)), step = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => s >= raw);
+  return range(0, Math.floor(max / step)).map(i => +(i * step).toFixed(10));
+}
+
+function renderAll() { renderCard(); renderLabels(); renderHeat(); renderLegend(); renderColumn(); renderSummary(); $('heat-scroll').scrollLeft = 0; }
+addEventListener('resize', renderSummary);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+renderAll();
+</script>
+</body>
+</html>
